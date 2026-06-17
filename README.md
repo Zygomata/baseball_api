@@ -91,3 +91,86 @@
       border-radius: 12px;
       padding: 16px;
     }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="badge">Project README</div>
+      <h1>Baseball Scouting API</h1>
+      <p class="lead">A FastAPI-based baseball scouting app that combines Sports Reference CSV source files, notebook-based data preparation, and a Jinja2 frontend to explore player stats by team and position.</p>
+
+      <h2>Overview</h2>
+      <p>This project builds a scouting workflow from raw team CSV files through a cleaned master dataset and into a lightweight web application. The notebook prepares and merges the source files into <span class="inline-code">api_teams_data.csv</span>, while the FastAPI app serves a scouting page and an API endpoint for filtered player data.</p>
+
+      <h2>Features</h2>
+      <ul>
+        <li>FastAPI backend for serving player data and page routes.</li>
+        <li>Jinja2 template rendering through <span class="inline-code">templates/scout.html</span>.</li>
+        <li>Team and position filtering through <span class="inline-code">POST /api/players</span>.</li>
+        <li>Notebook-based data preparation in <span class="inline-code">lake.ipynb</span>.</li>
+        <li>Cleaned aggregate dataset stored in <span class="inline-code">api_teams_data.csv</span>.</li>
+        <li>Source CSV workflow using a <span class="inline-code">sources/</span> folder populated with Sports Reference exports.</li>
+      </ul>
+
+      <h2>Project Structure</h2>
+      <pre><code>.
+├── api.py
+├── api_teams_data.csv
+├── lake.ipynb
+├── templates/
+│   └── scout.html
+└── sources/
+    ├── braves.csv
+    ├── dodgers.csv
+    ├── yankees.csv
+    └── ...</code></pre>
+
+      <p>The FastAPI app points Jinja2 at the <span class="inline-code">templates</span> directory and renders <span class="inline-code">scout.html</span> from there. The raw team CSV files in <span class="inline-code">sources/</span> serve as the input layer for the notebook-based data pipeline.</p>
+
+      <h2>How It Works</h2>
+      <ol>
+        <li>Collect team CSV files from Sports Reference into the <span class="inline-code">sources/</span> folder.</li>
+        <li>Use <span class="inline-code">lake.ipynb</span> to load, clean, and merge those files.</li>
+        <li>Export the processed data to <span class="inline-code">api_teams_data.csv</span>.</li>
+        <li>Run <span class="inline-code">api.py</span> to serve the frontend and API endpoints.</li>
+      </ol>
+
+      <h2>API Endpoints</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>GET /</h3>
+          <p>Renders the scouting interface using <span class="inline-code">templates/scout.html</span>.</p>
+        </div>
+        <div class="mini">
+          <h3>POST /api/players</h3>
+          <p>Returns filtered player data using request fields such as team, position, and optional metrics.</p>
+        </div>
+      </div>
+
+      <h2>Example Request</h2>
+      <pre><code>{
+  "team": "braves",
+  "position": "1B",
+  "metrics": ["WAR", "OPS", "HR"]
+}</code></pre>
+
+      <h2>Running the App</h2>
+      <pre><code>uvicorn api:app --reload</code></pre>
+      <p>Then open <span class="inline-code">http://127.0.0.1:8000</span> in your browser.</p>
+
+      <h2>Tech Stack</h2>
+      <ul>
+        <li>Python</li>
+        <li>FastAPI</li>
+        <li>pandas</li>
+        <li>Jinja2</li>
+        <li>HTML, CSS, and JavaScript frontend template</li>
+      </ul>
+
+      <h2>Data Notes</h2>
+      <p>The processed dataset includes player metrics such as team, age, position, WAR, OPS, OBP, SLG, HR, RBI, and related batting fields used for scouting-style filtering. The source workflow is designed around team-level Sports Reference CSV exports that are consolidated into a master table for application use.</p>
+    </div>
+  </div>
+</body>
+</html>
