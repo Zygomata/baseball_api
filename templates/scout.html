@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MLB Player Scout</title>
+    <style>
+        body { font-family: Arial; max-width: 900px; margin: 50px auto; padding: 20px; }
+        select, button { padding: 10px; margin: 5px; font-size: 16px; }
+        .checkbox-group { display: inline-block; margin: 5px; }
+        #results { margin-top: 20px; background: #f5f5f5; padding: 20px; border-radius: 8px; display: none; overflow: scroll;}
+        table { width: 100%; border-collapse: collapse; margin-top: 10px;}
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #4CAF50; color: white; }
+        .loading { color: #666; }
+        .error { color: red; }
+        .player-name { cursor: pointer; color: #1976d2; text-decoration: underline; }
+        .player-name:hover { color: #1565c0; background: #e3f2fd; }
+
+    </style>
+</head>
+<body>
+    <h1>MLB Player Scout Dashboard</h1>
+    
+    <div>
+        <label>Team:</label>
+        <select id="teamSelect">
+            <option value="">All Teams</option>
+            <option value="diamondbacks">Arizona Diamondbacks</option>
+            <option value="braves">Atlanta Braves</option>
+            <option value="orioles">Baltimore Orioles</option>
+            <option value="redsox">Boston Red Sox</option>
+            <option value="brewers">Milwaukee Brewers</option>
+            <option value="cardinals">St. Louis Cardinals</option>
+            <option value="cubs">Chicago Cubs</option>
+            <option value="whitesox">Chicago White Sox</option>
+            <option value="reds">Cincinnati Reds</option>
+            <option value="guardians">Cleveland Guardians</option>
+            <option value="rockies">Colorado Rockies</option>
+            <option value="tigers">Detroit Tigers</option>
+            <option value="astros">Houston Astros</option>
+            <option value="royals">Kansas City Royals</option>
+            <option value="angels">Los Angeles Angels</option>
+            <option value="dodgers">Los Angeles Dodgers</option>
+            <option value="marlins">Miami Marlins</option>
+            <option value="twins">Minnesota Twins</option>
+            <option value="mets">New York Mets</option>
+            <option value="yankees">New York Yankees</option>
+            <option value="athletics">Oakland Athletics</option>
+            <option value="phillies">Philadelphia Phillies</option>
+            <option value="pirates">Pittsburgh Pirates</option>
+            <option value="padres">San Diego Padres</option>
+            <option value="giants">San Francisco Giants</option>
+            <option value="mariners">Seattle Mariners</option>
+            <option value="rays">Tampa Bay Rays</option>
+            <option value="rangers">Texas Rangers</option>
+            <option value="bluejays">Toronto Blue Jays</option>
+            <option value="nationals">Washington Nationals</option>
+        </select>
+
+        <label>Position:</label>    
+        <select id="positionSelect">
+            <option value="">All Positions</option>
+            <option value="C">Catcher (C)</option>
+            <option value="1B">First Base (1B)</option>
+            <option value="2B">Second Base (2B)</option>
+            <option value="3B">Third Base (3B)</option>
+            <option value="SS">Shortstop (SS)</option>
+            <option value="LF">Left Field (LF)</option>
+            <option value="CF">Center Field (CF)</option>
+            <option value="RF">Right Field (RF)</option>
+            <option value="P">Pitcher (P)</option>
+            <option value="OF">Outfield (OF)</option>
+            <option value="DH">Designated Hitter (DH)</option>
+            <option value="IF">Infielder (IF)</option>
+            <option value="UT">Utility (UT)</option>
+            <option value="MI">Middle Infielder (MI)</option>
+            <option value="CI">Corner Infielder (CI)</option>
+        </select>
+    <br>
+        <label>Metrics:</label>
+        <div class="checkbox-group"><div class="checkbox-group">
+    <label><input type="checkbox" value="Age" checked> Age</label>
+    <label><input type="checkbox" value="Pos" checked> Pos</label>
+    <label><input type="checkbox" value="dominant_hand" checked> Hand</label>
+    <label><input type="checkbox" value="G" checked> G</label>
+    <label><input type="checkbox" value="PA" checked> PA</label>
+    <label><input type="checkbox" value="AB" checked> AB</label>
+    <label><input type="checkbox" value="R" checked> R</label>
+    <label><input type="checkbox" value="H" checked> H</label>
+    <label><input type="checkbox" value="2B" checked> 2B</label>
+    <label><input type="checkbox" value="3B" checked> 3B</label>
+    <label><input type="checkbox" value="HR" checked> HR</label>
+    <label><input type="checkbox" value="RBI" checked> RBI</label>
+    <label><input type="checkbox" value="SB" checked> SB</label>
+    <label><input type="checkbox" value="CS" checked> CS</label>
+    <label><input type="checkbox" value="BB" checked> BB</label>
+    <label><input type="checkbox" value="SO" checked> SO</label>
+    <label><input type="checkbox" value="HBP" checked> HBP</label>
+    <label><input type="checkbox" value="TB" checked> TB</label>
+    <label><input type="checkbox" value="GIDP" checked> GIDP</label>
+    <label><input type="checkbox" value="SH" checked> SH</label>
+    <label><input type="checkbox" value="SF" checked> SF</label>
+    <label><input type="checkbox" value="IBB" checked> IBB</label>
+    <label><input type="checkbox" value="BA" checked> AVG</label>
+    <label><input type="checkbox" value="OBP" checked> OBP</label>
+    <label><input type="checkbox" value="SLG" checked> SLG</label>
+    <label><input type="checkbox" value="OPS" checked> OPS</label>
+    <label><input type="checkbox" value="OPS+" checked> OPS+</label>
+    <label><input type="checkbox" value="rOBA" checked> rOBA</label>
+    <label><input type="checkbox" value="Rbat+" checked> Rbat+</label>
+    <label><input type="checkbox" value="WAR" checked> WAR</label>
+    <label><input type="checkbox" value="Awards" checked> Awards</label>
+</div>
+
+</div>
+
+
+
+
+        <button onclick="showData()"> Scout Players</button>
+    </div>
+
+    <div id="results" style="display: none;">Select filters above...</div>
+
+    <script>
+
+async function showData() {
+    const team = document.getElementById("teamSelect").value;
+    const position = document.getElementById("positionSelect").value;
+    const metrics = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(cb => cb.value);
+    
+    console.log("Filtering:", {team, position, metrics});
+    
+    document.getElementById("results").innerHTML = "Loading...";
+    document.getElementById("results").style.display = "block";
+    
+    try {
+        const res = await fetch("/api/players", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({team, position, metrics: metrics}) 
+        });
+        
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        console.log("Data received:", data.players.slice(0,2)); 
+        displayResults(data.players, metrics);
+    } catch(e) {
+        document.getElementById("results").innerHTML = `<p class="error">Error: ${e}</p>`;
+    }
+}
+
+
+   function displayResults(players, metrics) {
+    if (!players?.length) {
+        document.getElementById("results").innerHTML = "<p class='error'>No players found</p>";
+        return;
+    }
+    
+    const excludeColumns = ['Player', 'player', 'team'];
+    const displayMetrics = metrics.filter(metric => !excludeColumns.includes(metric));
+    
+    let headers = `<tr><th>Player</th><th>Team</th><th>Pos</th>`;
+    const labels = {
+        'BA': 'AVG', 'WAR': 'WAR', 'HR': 'HR', 'RBI': 'RBI', 'OPS': 'OPS', 'rOBA': 'rOBA',
+        'Age': 'Age', 'G': 'G', 'PA': 'PA', 'AB': 'AB', 'R': 'R', 'H': 'H',
+        '2B': '2B', '3B': '3B', 'dominant_hand': 'Hand', 'Pos': 'Pos'
+    };
+    
+    displayMetrics.forEach(metric => {
+        headers += `<th>${labels[metric] || metric}</th>`;
+    });
+    headers += "</tr>";
+    
+    let rows = "";
+    players.slice(0, 100).forEach(p => {
+        const playerName = p.Player || p.player || 'Unknown';
+        const teamName = (p.team || 'Unknown').charAt(0).toUpperCase() + (p.team || 'Unknown').slice(1);
+        const pos = p.Pos || p.pos || 'Unknown';
+        const hand = p.dominant_hand || 'N/A';  
+        
+        rows += `<tr>
+            <td class="player-name" onclick="fetchPlayer('${playerName}', '${teamName}')" title="Click for full stats">
+                ${playerName}
+            </td>
+            <td>${teamName}</td>
+            <td>${pos}</td>`;
+        
+        displayMetrics.forEach(metric => {
+            let value = p[metric];
+            let displayValue;
+            
+            if (metric === 'dominant_hand') {
+                displayValue = value || 'N/A';
+            } else if (value != null && !isNaN(value)) {
+                displayValue = (['BA','OBP','SLG','OPS','rOBA'].includes(metric)) ? 
+                    Number(value).toFixed(3) : Number(value).toFixed(0);
+            } else {
+                displayValue = value || '-';
+            }
+            
+            rows += `<td style="text-align: ${metric === 'dominant_hand' ? 'left' : 'right'};">${displayValue}</td>`;
+        });
+        rows += "</tr>";
+    });
+    
+    document.getElementById("results").innerHTML = 
+        `<h3> ${players.length} players </h3>
+         <table>${headers}${rows}</table>`;
+}
+    
+    </script>
+</body>
+</html>
